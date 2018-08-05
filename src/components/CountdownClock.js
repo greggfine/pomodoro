@@ -5,10 +5,10 @@ class CountdownClock extends Component {
 		super(props);
 
 		this.state = {
-			minutes: 25,
+			minutes: 1,
 			seconds: 0,
-			sessionLength: 25,
-			breakLength: 5,
+			sessionLength: 1,
+			breakLength: 1,
 			playState: false
 		}
 
@@ -19,14 +19,17 @@ class CountdownClock extends Component {
 		this.decrementSessionLength = this.decrementSessionLength.bind(this)
 		this.incrementBreakLength = this.incrementBreakLength.bind(this)
 		this.decrementBreakLength = this.decrementBreakLength.bind(this)
+		this.handleBreak = this.handleBreak.bind(this)
 	}
 
 
 
 	handleClock(){
 		this.interval = setInterval(() => {
-			if(this.state.seconds === 1 && this.state.minutes === 0){
+			if(this.state.seconds === 0 && this.state.minutes === 0){
 				this.pauseClock()
+				this.handleBreak()
+				
 			} else if(this.state.seconds === 0){
 					this.setState({
 						seconds: 60
@@ -38,7 +41,37 @@ class CountdownClock extends Component {
 				seconds: this.state.seconds -= 1,
 				playState: true
 			})
-		}, 1000)
+		}, 100)
+	}
+
+	handleBreak(){
+		this.setState({
+			minutes: this.state.breakLength -1,
+			seconds: 60,
+			playState: true
+		})
+		this.interval = setInterval(() => {
+			if(this.state.seconds === 1 && this.state.minutes === 0){
+				this.setState({
+					minutes: 1,
+					seconds: 0,
+					sessionLength: 1,
+					playState: true,
+				})
+				this.handleClock()
+			} else if(this.state.seconds === 1){
+					this.setState({
+						seconds: 60
+					})
+					this.state.minutes -= 1;
+			}
+			else{
+				this.setState({
+					seconds: this.state.seconds -= 1,
+					})
+				}
+			}, 200)
+			
 	}
 
 	pauseClock(){
@@ -51,11 +84,11 @@ class CountdownClock extends Component {
 	resetClock(){
 		this.pauseClock()
 		this.setState({
-			minutes: 25,
+			minutes: 1,
 			seconds: 0,
-			sessionLength: 25,
+			sessionLength: 1,
 			playState: false,
-			breakLength: 5
+			breakLength: 1
 		})
 	}
 
